@@ -1,4 +1,5 @@
 <template>
+
   <div class="landing-page">
     <v-container fluid fill-height>
       <v-row justify="center" align="center" class="fill-height">
@@ -147,5 +148,6 @@ export default {
     font-size: 14px;
   }
 }
+
 
 </style>
