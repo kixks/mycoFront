@@ -18,7 +18,7 @@
                 LOG IN
               </v-btn>
               <v-btn size="x-large" rounded="lg" outlined class="ma-3" color="teal-lighten-4">
-                REGISTER
+                REGISTERSSSS
               </v-btn>
             </v-row>
           </div>
