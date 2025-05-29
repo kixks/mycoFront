@@ -33,7 +33,7 @@
               Log in
             </v-btn>
 
-            <div class="divider">---------------------------- Log in with ----------------------------</div>
+            <div class="divider">----------------------------  Log in with  ----------------------------</div>
 
             <v-btn  class="google-btn">
 <img src="@/assets/images/download.png" height="20" width="30" class="mr-2" />
