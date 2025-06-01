@@ -59,7 +59,7 @@
             />
              <v-text-field
               v-model="Repeated"
-              label="Repeate password"
+              label="Repeat password"
               outlined
               dense
               type="password"
@@ -69,10 +69,14 @@
   :error-messages="Repeated && password !== Repeated ? ['Passwords do not match'] : []"
             />
 
+
             <v-btn  variant="elevated" size="large" rounded="x-large" :width="200" class="login-button" color="teal darken-2" dark width="20" >
             Sign In
             </v-btn>
-
+<div >
+  Already Have account?
+  <span class="sign-text" @click="goToRegister">Sign In</span>
+</div>
           
 
           </div>
@@ -159,7 +163,13 @@
   align-items: center;
   justify-content: center;
 }
-
+  .sign-text {
+  color: #bdf7ff;
+  font-weight: bold;
+  margin-left: 5px;
+  text-decoration: underline;
+  cursor: pointer;
+}
 /* Responsive tweaks */
 @media (max-width: 600px) {
   .login-card {
@@ -173,21 +183,25 @@
   .divider {
     font-size: 14px;
   }
+
+
 }
 
 </style>
-<script>
-export default {
-  data() {
-    return {
-      Fullname: '',
-      Email: '',
-      Address: '',
-      Mobile: '',
-      password: '',
-      Repeated: ''
-      
-    };
-  }
-};
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const Fullname = ref('')
+const Email = ref('')
+const Address = ref('')
+const Mobile = ref('')
+const password = ref('')
+const Repeated = ref('')
+
+const router = useRouter()
+
+const goToRegister = () => {
+  router.push('/login')
+}
 </script>

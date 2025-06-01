@@ -29,15 +29,19 @@
               class="input-field"
               hide-details
             />
-
-            <v-btn  variant="elevated" size="large" rounded="x-large" :width="200" class="login-button" color="teal darken-2" dark width="20" >
-              Log in
+<div >
+  Don't have an account?
+  <span class="signup-text" @click="goToRegister">Sign up</span>
+</div>
+            <v-btn  variant="elevated" size="large" rounded="x-large" :width="200"  class="login-button" color="teal darken-2" dark width="20" >
+              Sign in    
             </v-btn>
-
-            <div class="divider">----------------------------  Log in with  ----------------------------</div>
+            
+<div class="fancy-divider"></div>
+        
 
             <v-btn  class="google-btn">
-<img src="@/assets/images/download.png" height="20" width="30" class="mr-2" />
+<img src="@/assets/images/google_logo.png" height="30" width="35 " class="mr-2" />
               Google
             </v-btn>
           </div>
@@ -47,14 +51,17 @@
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      username: '',
-      password: ''
-    };
-  }
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const username = ref('')
+const password = ref('')
+
+const goToRegister = () => {
+  router.push('/register')
 }
 </script>
 
@@ -108,23 +115,18 @@ export default {
 }
 
 .login-button {
-  margin-top: 10px;
-  margin-bottom: 20px;
+  margin-top: 30px;
+  margin-bottom: 30px;
   border-radius: 10px;
   
 
 
 }
 
-.divider {
-  color: white;
-  margin-bottom: 10px;
-  font-size: 16px;
-  text-align: center;
-}
+
 
 .google-btn {
-  background-color: white;
+  background-color: #bdf7ff;
   color: #444;
   font-weight: 500;
   text-transform: none;
@@ -147,6 +149,23 @@ export default {
   .divider {
     font-size: 14px;
   }
+}
+
+.fancy-divider {
+  height: 2px;
+  width: 100%;
+  margin: 20px auto;
+  margin-top: -6px;
+  background:white;
+  border-radius: 2px;
+  }
+
+.signup-text {
+  color: #bdf7ff;
+  font-weight: bold;
+  margin-left: 5px;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 
