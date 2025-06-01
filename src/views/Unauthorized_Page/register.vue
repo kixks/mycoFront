@@ -5,8 +5,7 @@
         <v-col cols="12" sm="8" md="4">
           <div class="login-card">
             <div class="login-header">
-
-             <img src="@/assets/images/mainlogo.png" alt="Logo" class="login-logo" />
+              <img src="@/assets/images/mainlogo.png" alt="Logo" class="login-logo" />
               <h5 class="login-title">REGISTER</h5>
             </div>
 
@@ -15,39 +14,37 @@
               label="Fullname"
               outlined
               dense
-              class="input-field "
+              class="input-field"
               hide-details
             />
-            
-        
-            
+
             <v-text-field
               v-model="Email"
               label="Email"
               outlined
               dense
-              class="input-field "
+              class="input-field"
               hide-details
             />
-                <v-text-field
+            <v-text-field
               v-model="Address"
               label="Address"
               outlined
               dense
-              class="input-field "
+              class="input-field"
               hide-details
             />
-       <v-text-field
-  v-model="Mobile"
-  label="Mobile Number"
-  outlined
-  dense
-  type="tel"
-  class="input-field"
-  hide-details
-  @input="Mobile = Mobile.replace(/[^0-9]/g, '')"
-/>
-            
+            <v-text-field
+              v-model="Mobile"
+              label="Mobile Number"
+              outlined
+              dense
+              type="tel"
+              class="input-field"
+              hide-details
+              @input="Mobile = Mobile.replace(/[^0-9]/g, '')"
+            />
+
             <v-text-field
               v-model="password"
               label="Password"
@@ -57,36 +54,41 @@
               class="input-field"
               hide-details
             />
-             <v-text-field
+            <v-text-field
               v-model="Repeated"
+              label="Repeat password"
               label="Repeat password"
               outlined
               dense
               type="password"
               class="input-field"
               hide-details
-                :error="Repeated && password !== Repeated"
-  :error-messages="Repeated && password !== Repeated ? ['Passwords do not match'] : []"
+              :error="Repeated && password !== Repeated"
+              :error-messages="Repeated && password !== Repeated ? ['Passwords do not match'] : []"
             />
 
-
-            <v-btn  variant="elevated" size="large" rounded="x-large" :width="200" class="login-button" color="teal darken-2" dark width="20" >
-            Sign In
+            <v-btn
+              variant="elevated"
+              size="large"
+              rounded="x-large"
+              :width="200"
+              class="login-button"
+              color="teal darken-2"
+              dark
+              width="20"
+            >
+              Sign In
             </v-btn>
-<div >
-  Already Have account?
-  <span class="sign-text" @click="goToRegister">Sign In</span>
-</div>
-          
-
+            <div>
+              Already Have account?
+              <span class="sign-text" @click="goToRegister">Sign In</span>
+            </div>
           </div>
         </v-col>
       </v-row>
     </v-container>
   </div>
 </template>
-
-
 
 <style scoped>
 .landing-page {
@@ -115,7 +117,6 @@
   align-items: center;
   background-size: cover;
   background-repeat: no-repeat;
-
 }
 
 .login-header {
@@ -141,9 +142,6 @@
   margin-top: 10px;
   margin-bottom: 20px;
   border-radius: 10px;
-  
-
-
 }
 
 .divider {
@@ -163,7 +161,7 @@
   align-items: center;
   justify-content: center;
 }
-  .sign-text {
+.sign-text {
   color: #bdf7ff;
   font-weight: bold;
   margin-left: 5px;
@@ -183,10 +181,7 @@
   .divider {
     font-size: 14px;
   }
-
-
 }
-
 </style>
 <script setup>
 import { ref } from 'vue'

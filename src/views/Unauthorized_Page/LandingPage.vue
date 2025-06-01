@@ -41,7 +41,7 @@
       <div class="position-absolute top-0 right-0 pa-4 mt-5" style="z-index: 10">
         <v-row>
           <div>
-            <img src="/src/assets/images/clipart1553798.png" alt="" height="50" width="50" />
+            <img src="/src/assets/images/mainlogo.png" alt="" height="50" width="50" />
           </div>
           <v-btn size="auto" variant="text" class="about-text pa-2 mr-10">ABOUT US</v-btn>
         </v-row>

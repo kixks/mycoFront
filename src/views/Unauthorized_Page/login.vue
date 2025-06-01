@@ -1,13 +1,11 @@
 <template>
-
   <div class="landing-page">
     <v-container fluid fill-height>
       <v-row justify="center" align="center" class="fill-height">
         <v-col cols="12" sm="8" md="4">
           <div class="login-card">
             <div class="login-header">
-
-             <img src="@/assets/images/mainlogo.png" alt="Logo" class="login-logo" />
+              <img src="@/assets/images/mainlogo.png" alt="Logo" class="login-logo" />
               <h5 class="login-title">LOG IN</h5>
             </div>
 
@@ -15,9 +13,8 @@
               v-model="username"
               label="Username"
               outlined
-      
               dense
-              class="input-field "
+              class="input-field"
               hide-details
             />
             <v-text-field
@@ -29,19 +26,27 @@
               class="input-field"
               hide-details
             />
-<div >
-  Don't have an account?
-  <span class="signup-text" @click="goToRegister">Sign up</span>
-</div>
-            <v-btn  variant="elevated" size="large" rounded="x-large" :width="200"  class="login-button" color="teal darken-2" dark width="20" >
-              Sign in    
+            <div>
+              Don't have an account?
+              <span class="signup-text" @click="goToRegister">Sign up</span>
+            </div>
+            <v-btn
+              variant="elevated"
+              size="large"
+              rounded="x-large"
+              :width="200"
+              class="login-button"
+              color="teal darken-2"
+              dark
+              width="20"
+            >
+              Sign in
             </v-btn>
-            
-<div class="fancy-divider"></div>
-        
 
-            <v-btn  class="google-btn">
-<img src="@/assets/images/google_logo.png" height="30" width="35 " class="mr-2" />
+            <div class="fancy-divider"></div>
+
+            <v-btn class="google-btn">
+              <img src="@/assets/images/google_logo.png" height="30" width="35 " class="mr-2" />
               Google
             </v-btn>
           </div>
@@ -92,7 +97,6 @@ const goToRegister = () => {
   align-items: center;
   background-size: cover;
   background-repeat: no-repeat;
-
 }
 
 .login-header {
@@ -118,12 +122,7 @@ const goToRegister = () => {
   margin-top: 30px;
   margin-bottom: 30px;
   border-radius: 10px;
-  
-
-
 }
-
-
 
 .google-btn {
   background-color: #bdf7ff;
@@ -156,9 +155,9 @@ const goToRegister = () => {
   width: 100%;
   margin: 20px auto;
   margin-top: -6px;
-  background:white;
+  background: white;
   border-radius: 2px;
-  }
+}
 
 .signup-text {
   color: #bdf7ff;
@@ -167,6 +166,4 @@ const goToRegister = () => {
   text-decoration: underline;
   cursor: pointer;
 }
-
-
 </style>
