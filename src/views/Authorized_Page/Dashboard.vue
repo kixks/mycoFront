@@ -1,15 +1,13 @@
 <template>
-  <!-- Your main dashboard content goes here -->
-  <Navbar />
-  <Sidebar />
-  <div class="body-content">
-    <h1>Dashboard Area</h1>
-  </div>
+  <PageLayout>
+    <div class="body-content">
+      <h1>Dashboard Area</h1>
+    </div>
+  </PageLayout>
 </template>
 
 <script setup>
-import Navbar from '@/components/Navbar.vue'
-import Sidebar from '@/components/Sidebar.vue'
+import PageLayout from '@/components/PageLayout.vue'
 </script>
 
 <style scoped>

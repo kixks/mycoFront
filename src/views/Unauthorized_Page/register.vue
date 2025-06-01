@@ -57,7 +57,6 @@
             <v-text-field
               v-model="Repeated"
               label="Repeat password"
-              label="Repeat password"
               outlined
               dense
               type="password"
@@ -77,10 +76,10 @@
               dark
               width="20"
             >
-              Sign In
+              REGISTER
             </v-btn>
             <div>
-              Already Have account?
+              Already have an account?
               <span class="sign-text" @click="goToRegister">Sign In</span>
             </div>
           </div>

@@ -40,7 +40,7 @@
               dark
               width="20"
             >
-              Sign in
+              LOGIN
             </v-btn>
 
             <div class="fancy-divider"></div>
