@@ -16,5 +16,6 @@ import PageLayout from '@/components/PageLayout.vue'
   justify-content: center; /* horizontal centering */
   align-items: center; /* vertical centering */
   height: 100vh;
+  background-color: #dae9e5;
 }
 </style>
