@@ -31,6 +31,7 @@
                 value="report"
                 lines="two"
                 class="sidebar-item"
+                @click="goToDashboard"
               >
               </v-list-item>
               <v-list-item
@@ -39,6 +40,7 @@
                 value="messages"
                 lines="two"
                 class="sidebar-item"
+                @click="goToMessages"
               >
               </v-list-item>
               <v-list-item
@@ -47,6 +49,7 @@
                 value="settings"
                 lines="two"
                 class="sidebar-item"
+                @click="goToSettings"
               >
               </v-list-item>
             </v-list>
@@ -73,10 +76,23 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useDisplay } from 'vuetify'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const drawer = ref(true)
 const { mobile } = useDisplay()
 const isMobile = computed(() => mobile.value)
+
+const goToMessages = () => {
+  router.push('/messages')
+}
+const goToDashboard = () => {
+  router.push('/dashboard')
+}
+const goToSettings = () => {
+  router.push('/settings')
+}
 </script>
 
 <style scoped>

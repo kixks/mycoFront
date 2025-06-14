@@ -21,6 +21,16 @@ const routes = [
     name: 'dashboard',
     component: () => import('@/views/Authorized_Page/Dashboard.vue'),
   },
+  {
+    path: '/messages',
+    name: 'messages',
+    component: () => import('@/views/Authorized_Page/Messages.vue'),
+  },
+  {
+    path: '/settings',
+    name: 'settings',
+    component: () => import('@/views/Authorized_Page/Settings.vue'),
+  },
 ]
 
 const router = createRouter({ history: createWebHistory(), routes })
