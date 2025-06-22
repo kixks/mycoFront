@@ -57,7 +57,9 @@
 
           <!-- Logout Button at Bottom -->
           <div class="mt-auto pa-4 ma-2">
-            <v-btn block prepend-icon="pi pi-sign-out" color="#222222" @click=""> LOGOUT </v-btn>
+            <v-btn block prepend-icon="pi pi-sign-out" color="#222222" @click="handleLogout">
+              LOGOUT
+            </v-btn>
           </div>
         </div>
       </v-navigation-drawer>
@@ -77,6 +79,9 @@
 import { ref, computed } from 'vue'
 import { useDisplay } from 'vuetify'
 import { useRouter } from 'vue-router'
+import { useFarmerStore } from '@/stores/FarmerStore'
+
+const farmerStore = useFarmerStore()
 
 const router = useRouter()
 
@@ -92,6 +97,12 @@ const goToDashboard = () => {
 }
 const goToSettings = () => {
   router.push('/settings')
+}
+
+const handleLogout = async () => {
+  await farmerStore.logout()
+  // Optionally redirect
+  router.push('/')
 }
 </script>
 

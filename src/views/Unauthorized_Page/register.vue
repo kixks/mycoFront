@@ -1,93 +1,233 @@
 <template>
   <div class="landing-page">
+    <div class="floating-alert">
+      <v-alert v-if="showAlert" :type="alertType" :title="alertTitle" class="custom-alert" closable>
+        <template #prepend>
+          <i :class="iconClass" class="mt-1" style="font-size: 20px; color: inherit"></i>
+        </template>
+        <template #close>
+          <i
+            class="pi pi-times mt-1 mr-2"
+            style="cursor: pointer; font-size: 18px"
+            @click.stop="showAlert = false"
+          ></i>
+        </template>
+      </v-alert>
+    </div>
     <v-container fluid fill-height>
-      <v-row justify="center" align="center" class="fill-height">
-        <v-col cols="12" sm="8" md="4">
-          <div class="login-card">
-            <div class="login-header">
-              <img src="@/assets/images/mainlogo.png" alt="Logo" class="login-logo" />
-              <h5 class="login-title">REGISTER</h5>
-            </div>
+      <v-container class="login-card py-10 px-10" fluid>
+        <div class="login-header text-center mb-4">
+          <img src="@/assets/images/mainlogo.png" alt="Logo" class="login-logo" />
+          <h5 class="login-title">REGISTER</h5>
+        </div>
 
-            <v-text-field
-              v-model="Fullname"
-              label="Fullname"
-              outlined
-              dense
-              class="input-field"
-              hide-details
-            />
+        <v-form>
+          <v-row dense>
+            <v-col cols="12" sm="6" class="px-4">
+              <span class="field-label">Name</span>
+              <v-text-field
+                v-model="name"
+                label="Enter name"
+                variant="solo-filled"
+                density="compact"
+              />
+            </v-col>
 
-            <v-text-field
-              v-model="Email"
-              label="Email"
-              outlined
-              dense
-              class="input-field"
-              hide-details
-            />
-            <v-text-field
-              v-model="Address"
-              label="Address"
-              outlined
-              dense
-              class="input-field"
-              hide-details
-            />
-            <v-text-field
-              v-model="Mobile"
-              label="Mobile Number"
-              outlined
-              dense
-              type="tel"
-              class="input-field"
-              hide-details
-              @input="Mobile = Mobile.replace(/[^0-9]/g, '')"
-            />
+            <v-col cols="12" sm="6" class="px-4">
+              <span class="field-label">Address</span>
+              <v-text-field
+                v-model="address"
+                label="Enter address"
+                variant="solo-filled"
+                density="compact"
+              />
+            </v-col>
 
-            <v-text-field
-              v-model="password"
-              label="Password"
-              outlined
-              dense
-              type="password"
-              class="input-field"
-              hide-details
-            />
-            <v-text-field
-              v-model="Repeated"
-              label="Repeat password"
-              outlined
-              dense
-              type="password"
-              class="input-field"
-              hide-details
-              :error="Repeated && password !== Repeated"
-              :error-messages="Repeated && password !== Repeated ? ['Passwords do not match'] : []"
-            />
+            <v-col cols="12" sm="6" class="px-4">
+              <span class="field-label">Phone Number</span>
+              <v-text-field
+                v-model="phone"
+                label="Enter number"
+                variant="solo-filled"
+                density="compact"
+              />
+            </v-col>
 
-            <v-btn
-              variant="elevated"
-              size="large"
-              rounded="x-large"
-              :width="200"
-              class="login-button"
-              color="teal darken-2"
-              dark
-              width="20"
-            >
-              REGISTER
-            </v-btn>
-            <div>
-              Already have an account?
-              <span class="sign-text" @click="goToRegister">Sign In</span>
-            </div>
-          </div>
-        </v-col>
-      </v-row>
+            <v-col cols="12" sm="6" class="px-4">
+              <span class="field-label">Email Address</span>
+              <v-text-field
+                v-model="email"
+                label="Enter email"
+                variant="solo-filled"
+                density="compact"
+              />
+            </v-col>
+
+            <v-col cols="12">
+              <v-divider class="my-4 px-4"></v-divider>
+            </v-col>
+
+            <v-col cols="12" sm="6 " class="px-4">
+              <span class="field-label">Reset Password</span>
+              <v-text-field
+                v-model="password"
+                label="Enter password"
+                :type="showPassword ? 'text' : 'password'"
+                variant="solo-filled"
+                density="compact"
+                :append-inner-icon="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"
+                @click:append-inner="showPassword = !showPassword"
+                :error-messages="passwordError"
+              />
+            </v-col>
+
+            <v-col cols="12" sm="6" class="px-4">
+              <span class="field-label">Confirm Password</span>
+              <v-text-field
+                v-model="confirmPassword"
+                label="Enter password"
+                :type="showConfirmPassword ? 'text' : 'password'"
+                variant="solo-filled"
+                density="compact"
+                :append-inner-icon="showConfirmPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"
+                @click:append-inner="showConfirmPassword = !showConfirmPassword"
+                :error-messages="passwordError"
+              />
+            </v-col>
+
+            <v-col cols="12" class="text-center px-4">
+              <v-btn color="#169976" size="large" @click="handleRegister" block> Register </v-btn>
+            </v-col>
+          </v-row>
+        </v-form>
+
+        <div class="mt-5 text-center">
+          Already have an account?
+          <span class="sign-text" @click="goToRegister">Sign In</span>
+        </div>
+      </v-container>
     </v-container>
   </div>
 </template>
+<script setup>
+import { ref, watch, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useFarmerStore } from '@/stores/FarmerStore'
+
+const router = useRouter()
+const farmerStore = useFarmerStore()
+
+// Form Fields
+const name = ref('')
+const email = ref('')
+const address = ref('')
+const phone = ref('')
+const password = ref('')
+const confirmPassword = ref('')
+const passwordError = ref('')
+const showPassword = ref(false)
+const showConfirmPassword = ref(false)
+
+// Alert Feedback
+const showAlert = ref(false)
+const alertType = ref('success')
+const alertTitle = ref('')
+
+const iconClass = computed(() => {
+  switch (alertType.value) {
+    case 'success':
+      return 'pi pi-check-circle'
+    case 'error':
+      return 'pi pi-exclamation-circle'
+    default:
+      return ''
+  }
+})
+
+// Validate password matching
+watch([password, confirmPassword], () => {
+  if (password.value === confirmPassword.value) {
+    passwordError.value = ''
+  }
+})
+
+// Actual register handler
+const handleRegister = async () => {
+  // Basic field validation
+  if (
+    !name.value.trim() ||
+    !email.value.trim() ||
+    !address.value.trim() ||
+    !phone.value.trim() ||
+    !password.value ||
+    !confirmPassword.value
+  ) {
+    alertType.value = 'error'
+    alertTitle.value = 'All fields are required.'
+    showAlert.value = true
+    return
+  }
+
+  // Email format validation (basic)
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email.value)) {
+    alertType.value = 'error'
+    alertTitle.value = 'Please enter a valid email address.'
+    showAlert.value = true
+    return
+  }
+
+  // Phone number validation (optional - you can adjust for your region)
+  if (phone.value.length < 11) {
+    alertType.value = 'error'
+    alertTitle.value = 'Phone number must be at least 10 digits.'
+    showAlert.value = true
+    return
+  }
+  if (password.value !== confirmPassword.value) {
+    passwordError.value = 'Passwords do not match.'
+    alertType.value = 'error'
+    alertTitle.value = 'Passwords do not match.'
+    showAlert.value = true
+    return
+  }
+  if (password.value.length < 6) {
+    alertType.value = 'error'
+    alertTitle.value = 'Password must be at least 6 characters.'
+    showAlert.value = true
+    return
+  }
+
+  const payload = {
+    name: name.value,
+    email: email.value,
+    address: address.value,
+    mobileNumber: phone.value,
+    password: password.value,
+  }
+
+  try {
+    await farmerStore.register(payload)
+    alertType.value = 'success'
+    alertTitle.value = 'Registration successful!'
+    showAlert.value = true
+
+    setTimeout(() => {
+      router.push('/login')
+    }, 1500)
+  } catch (error) {
+    alertType.value = 'error'
+    alertTitle.value = 'Registration failed. Please try again.'
+    showAlert.value = true
+    console.error(error)
+  }
+}
+
+// Navigation
+const goToRegister = () => {
+  router.push('/login')
+}
+</script>
 
 <style scoped>
 .landing-page {
@@ -106,18 +246,16 @@
 }
 
 .login-card {
-  background-image: url('@/assets/images/login_bg.png'); /* Replace with your image path */
-  border-radius: 30px;
-  padding: 30px 20px;
-  box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.3);
-  color: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  background-image: url('@/assets/images/login_bg.png');
   background-size: cover;
   background-repeat: no-repeat;
+  background-position: center;
+  border-radius: 30px;
+  box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.3);
+  color: white;
+  max-width: 900px;
+  margin: auto;
 }
-
 .login-header {
   text-align: center;
   width: 100%;
@@ -167,35 +305,13 @@
   text-decoration: underline;
   cursor: pointer;
 }
-/* Responsive tweaks */
-@media (max-width: 600px) {
-  .login-card {
-    padding: 20px 15px;
-  }
-
-  .login-title {
-    font-size: 20px;
-  }
-
-  .divider {
-    font-size: 14px;
-  }
+.floating-alert {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: 90%;
+  max-width: 400px;
 }
 </style>
-<script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-
-const Fullname = ref('')
-const Email = ref('')
-const Address = ref('')
-const Mobile = ref('')
-const password = ref('')
-const Repeated = ref('')
-
-const router = useRouter()
-
-const goToRegister = () => {
-  router.push('/login')
-}
-</script>

@@ -2,6 +2,7 @@ import './assets/main.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import axiosPlugin from './plugins/axios'
 
 // Vuetify
 import 'vuetify/styles'
@@ -19,6 +20,7 @@ const vuetify = createVuetify({
 
 const app = createApp(App)
 
+app.use(axiosPlugin)
 app.use(createPinia())
 app.use(router)
 app.use(vuetify)

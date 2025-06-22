@@ -1,7 +1,21 @@
 <template>
   <div class="landing-page">
+    <div class="floating-alert">
+      <v-alert v-if="showAlert" :type="alertType" :title="alertTitle" class="custom-alert" closable>
+        <template #prepend>
+          <i :class="iconClass" class="mt-1" style="font-size: 20px; color: inherit"></i>
+        </template>
+        <template #close>
+          <i
+            class="pi pi-times mt-1 mr-2"
+            style="cursor: pointer; font-size: 18px"
+            @click.stop="showAlert = false"
+          ></i>
+        </template>
+      </v-alert>
+    </div>
     <v-container fluid fill-height>
-      <v-row justify="center" align="center" class="fill-height">
+      <v-row justify="center" class="fill-height">
         <v-col cols="12" sm="8" md="4">
           <div class="login-card">
             <div class="login-header">
@@ -10,8 +24,8 @@
             </div>
 
             <v-text-field
-              v-model="username"
-              label="Username"
+              v-model="mobilNumber"
+              label="Mobile Number"
               outlined
               dense
               class="input-field"
@@ -26,26 +40,27 @@
               class="input-field"
               hide-details
             />
-            <div>
-              Don't have an account?
-              <span class="signup-text" @click="goToRegister">Sign up</span>
-            </div>
             <v-btn
               variant="elevated"
               size="large"
               rounded="x-large"
-              :width="200"
+              :width="300"
               class="login-button"
               color="teal darken-2"
               dark
-              width="20"
+              @click="loginUser"
             >
               LOGIN
             </v-btn>
 
+            <div>
+              Don't have an account?
+              <span class="signup-text" @click="goToRegister">Sign up</span>
+            </div>
+
             <div class="fancy-divider"></div>
 
-            <v-btn class="google-btn">
+            <v-btn class="google-btn" @click="googleLogin">
               <img src="@/assets/images/google_logo.png" height="30" width="35 " class="mr-2" />
               Google
             </v-btn>
@@ -59,15 +74,63 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useFarmerStore } from '@/stores/FarmerStore'
+import { computed } from 'vue'
 
 const router = useRouter()
 
-const username = ref('')
+const mobilNumber = ref('')
 const password = ref('')
+let userDetails = ref([])
+
+const showAlert = ref(false)
+const alertType = ref('success') // can be 'success' or 'error'
+const alertTitle = ref('')
 
 const goToRegister = () => {
   router.push('/register')
 }
+
+const loginUser = async () => {
+  const store = useFarmerStore()
+
+  let payload = {
+    mobileNumber: mobilNumber.value,
+    password: password.value,
+  }
+
+  await store.login(payload)
+
+  if (store.isLoggedIn) {
+    userDetails.value = store.userArray
+    console.log('Mao ning nafetch na user', userDetails.value)
+    alertType.value = 'success'
+    alertTitle.value = 'Login Successful'
+    showAlert.value = true
+
+    router.push('/dashboard')
+  } else {
+    console.log(typeof store.errorLogin)
+    alertType.value = 'error'
+    alertTitle.value = String(store.errorLogin || 'An error occurred.')
+    showAlert.value = true
+  }
+}
+
+const googleLogin = async () => {
+  window.location.href = 'https://localhost:7165/api/Auth/signin-google'
+}
+
+const iconClass = computed(() => {
+  switch (alertType.value) {
+    case 'success':
+      return 'pi pi-check-circle'
+    case 'error':
+      return 'pi pi-exclamation-circle'
+    default:
+      return ''
+  }
+})
 </script>
 
 <style scoped>
@@ -119,8 +182,8 @@ const goToRegister = () => {
 }
 
 .login-button {
-  margin-top: 30px;
-  margin-bottom: 30px;
+  margin-top: 20px;
+  margin-bottom: 20px;
   border-radius: 10px;
 }
 
@@ -133,6 +196,22 @@ const goToRegister = () => {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 20px;
+  width: 155px;
+}
+.floating-alert {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: 50%;
+  max-width: 300px;
+}
+
+.custom-alert {
+  border-radius: 10px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 /* Responsive tweaks */
@@ -154,7 +233,7 @@ const goToRegister = () => {
   height: 2px;
   width: 100%;
   margin: 20px auto;
-  margin-top: -6px;
+  margin-top: 15px;
   background: white;
   border-radius: 2px;
 }
@@ -162,7 +241,6 @@ const goToRegister = () => {
 .signup-text {
   color: #bdf7ff;
   font-weight: bold;
-  margin-left: 5px;
   text-decoration: underline;
   cursor: pointer;
 }
