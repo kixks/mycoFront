@@ -17,6 +17,11 @@ const routes = [
     name: 'register',
     component: () => import('@/views/Unauthorized_Page/register.vue'),
   },
+  {
+    path: '/google-auth-success',
+    name: 'authSuccess',
+    component: () => import('@/views/Authorized_Page/GoogleAuthSuccess.vue'),
+  },
 
   // AUTHORIZED PAGES (Protected)
   {
@@ -35,12 +40,6 @@ const routes = [
     path: '/settings',
     name: 'settings',
     component: () => import('@/views/Authorized_Page/Settings.vue'),
-    meta: { requiresAuth: true },
-  },
-  {
-    path: '/google-auth-success',
-    name: 'authSuccess',
-    component: () => import('@/views/Authorized_Page/GoogleAuthSuccess.vue'),
     meta: { requiresAuth: true },
   },
 ]
