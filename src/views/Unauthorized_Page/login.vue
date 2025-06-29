@@ -118,7 +118,7 @@ const loginUser = async () => {
 }
 
 const googleLogin = async () => {
-  window.location.href = 'https://localhost:7165/api/Auth/signin-google'
+  window.location.href = 'https://kingfish-wealthy-calf.ngrok-free.app/api/Auth/signin-google'
 }
 
 const iconClass = computed(() => {

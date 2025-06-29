@@ -42,12 +42,14 @@ export const useChatStore = defineStore('chat', () => {
     } catch (error) {
       console.error('Failed to fetch messages:', error)
     }
-
     // Create new connection
     connection.value = new signalR.HubConnectionBuilder()
-      .withUrl(`https://localhost:7165/chathub?user=${encodeURIComponent(localUserName)}`, {
-        withCredentials: true,
-      })
+      .withUrl(
+        `https://kingfish-wealthy-calf.ngrok-free.app/chathub?user=${encodeURIComponent(localUserName)}`,
+        {
+          withCredentials: true,
+        },
+      )
       .withAutomaticReconnect()
       .build()
 

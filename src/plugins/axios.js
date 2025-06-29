@@ -1,7 +1,10 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: 'https://localhost:7165/api',
+  baseURL: 'https://kingfish-wealthy-calf.ngrok-free.app/api',
+  headers: {
+    'ngrok-skip-browser-warning': 'true',
+  },
 })
 
 export default {
