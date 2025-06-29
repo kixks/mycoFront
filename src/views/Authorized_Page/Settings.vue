@@ -81,7 +81,6 @@
                   :type="showPassword ? 'text' : 'password'"
                   variant="solo-filled"
                   density="comfortable"
-                  required
                   :append-inner-icon="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"
                   @click:append-inner="showPassword = !showPassword"
                   :error-messages="passwordError"
@@ -96,7 +95,6 @@
                   :type="showConfirmPassword ? 'text' : 'password'"
                   variant="solo-filled"
                   density="comfortable"
-                  required
                   :append-inner-icon="showConfirmPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"
                   @click:append-inner="showConfirmPassword = !showConfirmPassword"
                   :error-messages="passwordError"
@@ -168,21 +166,14 @@ watch([password, confirmPassword], () => {
 })
 
 const updateSettings = async () => {
-  if (
-    !name.value.trim() ||
-    !email.value.trim() ||
-    !address.value.trim() ||
-    !phone.value.trim() ||
-    !password.value ||
-    !confirmPassword.value
-  ) {
+  if (!name.value.trim() || !email.value.trim() || !address.value.trim() || !phone.value.trim()) {
     alertType.value = 'error'
-    alertTitle.value = 'All fields are required.'
+    alertTitle.value = 'Name, Email, Address, and Phone Number are required.'
     showAlert.value = true
     return
   }
 
-  // Email format validation (basic)
+  // Basic email validation
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   if (!emailRegex.test(email.value)) {
     alertType.value = 'error'
@@ -191,25 +182,34 @@ const updateSettings = async () => {
     return
   }
 
-  // Phone number validation (optional - you can adjust for your region)
+  // Phone number validation
   if (phone.value.length < 11) {
     alertType.value = 'error'
-    alertTitle.value = 'Phone number must be at least 10 digits.'
+    alertTitle.value = 'Phone number must be at least 11 digits.'
     showAlert.value = true
     return
   }
-  if (password.value !== confirmPassword.value) {
-    passwordError.value = 'Passwords do not match.'
-    alertType.value = 'error'
-    alertTitle.value = 'Passwords do not match.'
-    showAlert.value = true
-    return
-  }
-  if (password.value.length < 6) {
-    alertType.value = 'error'
-    alertTitle.value = 'Password must be at least 6 characters.'
-    showAlert.value = true
-    return
+
+  // Optional password validation
+  const isPasswordProvided =
+    password.value.trim().length > 0 || confirmPassword.value.trim().length > 0
+
+  if (isPasswordProvided) {
+    if (password.value.length < 6) {
+      passwordError.value = 'Password must be at least 6 characters.'
+      alertType.value = 'error'
+      alertTitle.value = 'Password must be at least 6 characters.'
+      showAlert.value = true
+      return
+    }
+
+    if (password.value !== confirmPassword.value) {
+      passwordError.value = 'Passwords do not match.'
+      alertType.value = 'error'
+      alertTitle.value = 'Passwords do not match.'
+      showAlert.value = true
+      return
+    }
   }
 
   passwordError.value = ''
@@ -220,12 +220,13 @@ const updateSettings = async () => {
     email: email.value,
     address: address.value,
     mobileNumber: phone.value,
-    password: password.value,
+    password: isPasswordProvided ? password.value : null,
   }
-  console.log(payload)
+
   try {
     await farmerStore.updateUser(payload)
     await farmerStore.getCurrentUser(userId.value)
+    alertType.value = 'success'
     alertTitle.value = 'Credentials successfully updated!'
     showAlert.value = true
     setTimeout(() => location.reload(), 1500)
