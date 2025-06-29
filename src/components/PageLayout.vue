@@ -76,7 +76,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useDisplay } from 'vuetify'
 import { useRouter } from 'vue-router'
 import { useFarmerStore } from '@/stores/FarmerStore'
@@ -85,24 +85,33 @@ const farmerStore = useFarmerStore()
 
 const router = useRouter()
 
-const drawer = ref(true)
+const drawer = ref(!useDisplay().mobile.value)
+
 const { mobile } = useDisplay()
 const isMobile = computed(() => mobile.value)
 
+watch(isMobile, (mobile) => {
+  if (mobile) drawer.value = false
+})
+
 const goToMessages = () => {
   router.push('/messages')
+  if (isMobile.value) drawer.value = false
 }
 const goToDashboard = () => {
   router.push('/dashboard')
+  if (isMobile.value) drawer.value = false
 }
 const goToSettings = () => {
   router.push('/settings')
+  if (isMobile.value) drawer.value = false
 }
 
 const handleLogout = async () => {
   await farmerStore.logout()
   // Optionally redirect
   router.push('/')
+  if (isMobile.value) drawer.value = false
 }
 </script>
 

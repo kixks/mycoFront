@@ -36,22 +36,20 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(item, index) in detectedArray" :key="index">
+              <tr
+                v-for="(item, index) in detectedArray"
+                :key="index"
+                @click="
+                  () => {
+                    selectedSnapshot = item.SnapshotUrl
+                    showDialog = true
+                  }
+                "
+                style="cursor: pointer"
+              >
                 <td>{{ formatDate(item.CreatedAt) }}</td>
                 <td>{{ item.ConfidenceScore }}%</td>
-                <td>
-                  <span
-                    style="color: #cd5656; font-weight: bold; cursor: pointer"
-                    @click="
-                      () => {
-                        selectedSnapshot = item.SnapshotUrl
-                        showDialog = true
-                      }
-                    "
-                  >
-                    View
-                  </span>
-                </td>
+                <td style="color: #cd5656; font-weight: bold">View</td>
               </tr>
             </tbody>
           </v-table>
@@ -217,6 +215,9 @@ const iconClass = computed(() => {
 }
 .custom-table tbody tr td {
   color: #096b68;
+}
+.custom-table tbody tr:hover {
+  background-color: #e0f2f1;
 }
 .custom-table tbody tr td:hover {
   color: #a0d4d3;
