@@ -1,35 +1,42 @@
-# MycoPlasmaFront
+# 🐔 MycoCheck Frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+**MycoCheck** is a web-based poultry monitoring platform designed to help farmers detect and respond to symptoms of **Mycoplasma infection** in chickens. This repository contains the frontend code for the system, built using **Vue 3**, **Pinia**, and **Vuetify**.
 
-## Recommended IDE Setup
+---
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## Features
 
-## Customize configuration
+- ✅ Real-time snapshot viewing of symptomatic chickens
+- 📊 Dashboard with detection accuracy and timestamps
+- 💬 Vet-to-Farmer messaging system (via SignalR)
+- 📱 Mobile-responsive sidebar and layout
+- 🔐 Login/logout with user-type based access (Farmer / Vet)
+- 🔔 SMS alerts for flagged symptoms (handled via backend)
+- ✅ Handles jwt+google 0auth 2.0 from backend
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+---
 
-## Project Setup
+## 🛠 Tech Stack
 
-```sh
-npm install
-```
+| Category   | Tools                    |
+|------------|--------------------------|
+| Framework  | [Vue 3](https://vuejs.org/) |
+| UI Library | [Vuetify 3](https://next.vuetifyjs.com/) |
+| State Mgmt | [Pinia](https://pinia.vuejs.org/) |
+| Realtime   | [SignalR](https://www.npmjs.com/package/@microsoft/signalr) |
+| HTTP       | Axios + REST API         |
+| Build Tool | Vite                     |
 
-### Compile and Hot-Reload for Development
+---
 
-```sh
-npm run dev
-```
+## 📦 Project Structure
 
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+```bash
+src/
+│
+├── components/          # Reusable components (layout, tables, etc.)
+├── pages/               # Main route views like Dashboard, Messages
+├── stores/              # Pinia stores (e.g., FarmerStore)
+├── plugins/axios.js     # Axios instance for backend communication
+├── App.vue              # Root Vue file
+└── main.js              # App entry point
