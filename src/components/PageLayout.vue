@@ -15,7 +15,7 @@
             <!-- This div contains all non-logout content -->
             <v-list>
               <v-list-item
-                prepend-avatar="@/mainlogo.png"
+                prepend-avatar="/mainlogo.png"
                 title="MycoCheck"
                 class="custom-list-item"
               >
