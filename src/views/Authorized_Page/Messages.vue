@@ -9,7 +9,7 @@
           <v-container>
             <v-row>
               <v-col cols="12" md="3" v-if="userType == 'Farmer'">
-                <div class="text-subtitle">Detected Symptomatics</div>
+                <div class="text-subtitle">Detected Chickens</div>
                 <v-select
                   v-model="selectedImage"
                   :items="farmerStore.detectedChickenArray"
@@ -24,7 +24,7 @@
                     <v-list-item v-bind="props">
                       <template #title>
                         <div class="d-flex align-center justify-space-between w-100">
-                          <span>Symptomatic {{ item.raw.Id }}</span>
+                          <span>Symptomatic {{ item.raw.ConfidenceScore }}</span>
                           <v-icon @click.stop.prevent="previewImage(item.raw.SnapshotUrl, true)"
                             >pi pi-eye</v-icon
                           >

@@ -26,7 +26,9 @@
         class="d-flex flex-column align-center justify-center elevation-3 pa-10 w-75"
       >
         <div v-if="userType == 'Farmer'" class="table-wrapper">
-          <div class="text-h3 ma-8 title text-center">Detected Symptomatic Chickens</div>
+          <div class="ma-8 text-center">
+            <div class="text-h3 text-md-h4 text-sm-h5 title">Chickens Flagged for Mycoplasma</div>
+          </div>
           <v-table height="400px" fixed-header class="w-90 ma-10 custom-table">
             <thead>
               <tr>
@@ -238,5 +240,13 @@ const iconClass = computed(() => {
 .custom-alert {
   border-radius: 10px;
   box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 600px) {
+  .title {
+    font-size: 1.2rem !important;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
 }
 </style>
