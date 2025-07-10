@@ -1,6 +1,7 @@
 <template>
   <PageLayout>
     <div class="body-content">
+      <!-- Floating alert -->
       <div class="floating-alert" v-if="userType == 'Farmer'">
         <v-alert
           v-if="showAlert"
@@ -10,26 +11,69 @@
           closable
         >
           <template #prepend>
-            <i :class="iconClass" class="mt-1" style="font-size: 20px; color: inherit"></i>
+            <i :class="iconClass" class="mt-1" style="font-size: 20px; color: inherit" />
           </template>
           <template #close>
             <i
               class="pi pi-times mt-1 mr-2"
               style="cursor: pointer; font-size: 18px"
               @click.stop="showAlert = false"
-            ></i>
+            />
           </template>
         </v-alert>
       </div>
-      <v-container
-        fluid
-        class="d-flex flex-column align-center justify-center elevation-3 pa-10 w-75"
-      >
-        <div v-if="userType == 'Farmer'" class="table-wrapper">
-          <div class="ma-8 text-center">
-            <div class="text-h3 text-md-h4 text-sm-h5 title">Chickens Flagged for Mycoplasma</div>
-          </div>
-          <v-table height="400px" fixed-header class="w-90 ma-10 custom-table">
+
+      <!-- Top Row (Total count + Chart) -->
+      <v-container fluid>
+        <v-row>
+          <v-col cols="12" md="5">
+            <v-container class="rounded-xl elevation-3" style="height: 39vh">
+              <h2 class="title text-center">TOTAL NUMBER OF DETECTED CHICKENS</h2>
+              <h1 v-if="userType === 'Farmer'" class="text-center detected-chicken-count">
+                {{ farmerStore.detectedChickenArray.length }}
+              </h1>
+
+              <h1 v-else class="text-center detected-chicken-count">
+                {{ totalCount }}
+              </h1>
+            </v-container>
+          </v-col>
+
+          <v-col cols="12" md="7" v-if="userType === 'Farmer'">
+            <v-container class="rounded-xl elevation-3 pa-5">
+              <div class="toolbar mb-3">
+                <button
+                  v-for="option in ['week', 'month', 'year']"
+                  :key="option"
+                  :class="{ active: selection === option }"
+                  @click="updateData(option)"
+                >
+                  {{ option.toUpperCase() }}
+                </button>
+              </div>
+              <apexchart
+                type="area"
+                height="250"
+                :options="chartOptions"
+                :series="series"
+                ref="chartRef"
+            /></v-container>
+            <div class="chart-section"></div>
+          </v-col>
+          <v-col cols="12" md="7" v-else>
+            <v-container class="rounded-xl elevation-3 pa-5">
+              <h2 class="title text-center">DETECTED SYMPTOMATIC CHICKEN PER USER</h2>
+              <apexchart type="bar" height="250" :options="barChartOptions" :series="barSeries"
+            /></v-container>
+            <div class="chart-section"></div>
+          </v-col>
+        </v-row>
+      </v-container>
+
+      <!-- Table below chart -->
+      <v-container fluid class="rounded-xl elevation-3 mt-4 table-wrapper">
+        <div v-if="userType == 'Farmer'">
+          <v-table height="400px" fixed-header class="custom-table">
             <thead>
               <tr>
                 <th class="text-left">TIMESTAMP</th>
@@ -56,24 +100,26 @@
             </tbody>
           </v-table>
         </div>
-        <div v-else class="table-wrapper">
-          <div class="text-h3 ma-8 title text-center">Farmers Overview</div>
-          <v-table height="400px" fixed-header class="w-90 ma-10 custom-table">
+
+        <div v-else>
+          <v-table height="400px" fixed-header class="custom-table">
             <thead>
               <tr>
+                <th class="text-left">#</th>
                 <th class="text-left">FULL NAME</th>
                 <th class="text-left">ADDRESS</th>
+                <th class="text-left">MOBILE NUMBER</th>
                 <th class="text-left"># SYMPTOMATIC DETECTED</th>
                 <th class="text-left">Action</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(user, index) in AllUserArray" :key="user.Id">
+                <td>{{ index + 1 }}</td>
                 <td>{{ user.Name }}</td>
                 <td>{{ user.Address }}</td>
-                <td>
-                  {{ symptomaticMap[user.Id] || 0 }}
-                </td>
+                <td>{{ user.MobileNumber }}</td>
+                <td>{{ symptomaticMap[user.Id] || 0 }}</td>
                 <td>
                   <span
                     style="color: #cd5656; font-weight: bold; cursor: pointer"
@@ -87,6 +133,7 @@
           </v-table>
         </div>
 
+        <!-- Snapshot Dialog -->
         <v-dialog v-model="showDialog" max-width="600">
           <v-card>
             <v-card-title class="font-weight-bold text-h5 pt-4">Snapshot Preview</v-card-title>
@@ -95,9 +142,9 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="primary" class="font-weight-bold text-h6" @click="showDialog = false"
-                >CLOSE</v-btn
-              >
+              <v-btn color="primary" class="font-weight-bold text-h6" @click="showDialog = false">
+                CLOSE
+              </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -109,7 +156,7 @@
 <script setup>
 import PageLayout from '@/components/PageLayout.vue'
 import { useFarmerStore } from '@/stores/FarmerStore'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -129,6 +176,10 @@ const selectedSnapshot = ref('')
 const detectedArray = ref([])
 const AllUserArray = ref([])
 const symptomaticMap = ref({})
+const totalCount = ref(0)
+
+const chartRef = ref(null)
+const selection = ref('one_year')
 
 console.log('im the currentfarmerid', userId)
 
@@ -140,19 +191,46 @@ onMounted(async () => {
     AllUserArray.value = farmerStore.allUserArray.filter((u) => u.UserType === 'Farmer')
     await fetchSymptomaticCountsForAll()
   }
+  series.value[0].data = groupByDateCountWithZeros(detectedArray.value)
+
+  setTimeout(() => {
+    updateData('weak')
+  }, 500)
 })
 
+watch(detectedArray, () => {
+  const groupedData = groupByDateCountWithZeros(detectedArray.value)
+  series.value[0].data = groupedData
+})
 const fetchSymptomaticCountsForAll = async () => {
   const counts = {}
 
-  const promises = AllUserArray.value.map(async (user) => {
-    await farmerStore.fetchSymptomatic(user.Id)
-    console.log('IM THE RESPONSE PER FARMER', farmerStore.detectedChickenArray)
-    counts[user.Id] = farmerStore.detectedChickenArray?.length || 0
-  })
-  await Promise.all(promises)
+  // Fetch data for all farmers
+  await Promise.all(
+    AllUserArray.value.map(async (user) => {
+      await farmerStore.fetchSymptomatic(user.Id)
+      console.log('IM THE RESPONSE PER FARMER', farmerStore.detectedChickenArray)
+      counts[user.Id] = farmerStore.detectedChickenArray?.length || 0
+    }),
+  )
 
+  // Save to reactive state
   symptomaticMap.value = counts
+
+  // ✅ Call chart builder to populate Apex bar chart
+  buildBarChart()
+}
+const buildBarChart = () => {
+  const labels = AllUserArray.value.map((user) => user.Name)
+  const data = AllUserArray.value.map((user) => symptomaticMap.value[user.Id] || 0)
+
+  console.log('IM THE LABELS', labels)
+  console.log('IM THE DATA', data)
+
+  barChartOptions.value.xaxis.categories = labels
+  barSeries.value[0].data = data
+
+  totalCount.value = data.reduce((sum, val) => sum + val, 0)
 }
 
 const getDetectedSymptomatic = async (userId) => {
@@ -194,21 +272,154 @@ const iconClass = computed(() => {
       return ''
   }
 })
+const groupByDateCountWithZeros = (arr, fromDate = null, toDate = null) => {
+  if (!arr.length) return []
+
+  // Normalize CreatedAt dates to just the day (midnight)
+  const counts = new Map()
+  arr.forEach((item) => {
+    const date = new Date(item.CreatedAt)
+    date.setHours(0, 0, 0, 0)
+    const time = date.getTime()
+    counts.set(time, (counts.get(time) || 0) + 1)
+  })
+
+  // Define date range
+  const minDate =
+    fromDate || new Date(Math.min(...arr.map((item) => new Date(item.CreatedAt).getTime())))
+  const maxDate = toDate || new Date()
+  minDate.setHours(0, 0, 0, 0)
+  maxDate.setHours(0, 0, 0, 0)
+
+  // Fill missing dates with 0
+  const result = []
+  const current = new Date(minDate)
+  while (current <= maxDate) {
+    const time = current.getTime()
+    result.push([time, counts.get(time) || 0])
+    current.setDate(current.getDate() + 1)
+  }
+
+  return result
+}
+
+const updateData = (range) => {
+  selection.value = range
+  const now = new Date()
+  let fromDate
+
+  switch (range) {
+    case 'week':
+      fromDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+      break
+    case 'month':
+      fromDate = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate())
+      break
+    case 'year':
+      fromDate = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate())
+      break
+    default:
+      fromDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+  }
+
+  // Update series to show even 0-count days
+  const groupedData = groupByDateCountWithZeros(detectedArray.value, fromDate, now)
+  series.value[0].data = groupedData
+
+  const chart = chartRef.value?.chart
+  if (chart) chart.zoomX(fromDate.getTime(), now.getTime())
+}
+
+// Apex Chart Config
+const series = ref([
+  {
+    data: [],
+  },
+])
+
+const chartOptions = ref({
+  colors: ['#169976'],
+  chart: {
+    id: 'area-datetime',
+    type: 'area',
+    height: 350,
+    zoom: { autoScaleYaxis: true },
+  },
+  dataLabels: { enabled: false },
+  markers: { size: 4, style: 'hollow' },
+  xaxis: {
+    type: 'datetime',
+    labels: {
+      format: 'dd MMM yyyy', // Show only the date
+    },
+    tickAmount: 6,
+  },
+  yaxis: {
+    decimalsInFloat: 0, // Round off to whole numbers
+    forceNiceScale: true,
+    labels: {
+      formatter: (val) => Math.floor(val), // Just in case float sneaks in
+    },
+  },
+  tooltip: {
+    x: { format: 'dd MMM yyyy' }, // Tooltip shows only date
+  },
+  fill: {
+    type: 'gradient',
+    gradient: {
+      shadeIntensity: 1,
+      opacityFrom: 0.7,
+      opacityTo: 0.9,
+      stops: [0, 100],
+    },
+  },
+})
+
+const barChartOptions = ref({
+  colors: ['#169976'],
+
+  chart: {
+    type: 'bar',
+    height: 350,
+  },
+  plotOptions: {
+    bar: {
+      borderRadius: 4,
+      borderRadiusApplication: 'end',
+      horizontal: true,
+    },
+  },
+  dataLabels: {
+    enabled: true,
+  },
+  xaxis: {
+    title: {
+      text: '# of Symptomatic Chickens',
+    },
+  },
+  yaxis: {
+    categories: [], // ✅ Correct for horizontal bar chart
+  },
+})
+
+const barSeries = ref([
+  {
+    name: 'Symptomatic Count',
+    data: [], // ← dynamically filled with counts
+  },
+])
 </script>
 
 <style scoped>
 .body-content {
   font-family: 'Poppins', sans-serif;
-  display: flex;
-  flex-direction: column;
-  justify-content: center; /* horizontal centering */
-  align-items: center; /* vertical centering */
   height: 100vh;
-  background-color: #dae9e5;
+  padding: 2rem;
+  overflow: auto;
 }
 .title {
   font-family: 'Poppins', sans-serif;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .custom-table thead tr th {
@@ -232,16 +443,42 @@ const iconClass = computed(() => {
   z-index: 9999;
   width: fit-content;
 }
-.table-wrapper {
-  width: 100%;
-  overflow-x: hidden;
-}
 
 .custom-alert {
   border-radius: 10px;
   box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
 }
 
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.toolbar button {
+  padding: 6px 12px;
+  background-color: #169976;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.toolbar button.active {
+  background-color: #0f7a59;
+}
+
+.table-wrapper {
+  margin-top: 40px;
+}
+.detected-chicken-count {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 10rem;
+  padding-top: 1rem;
+  color: #169976;
+}
 @media (max-width: 600px) {
   .title {
     font-size: 1.2rem !important;

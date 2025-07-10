@@ -11,6 +11,10 @@ export const useFarmerStore = defineStore('farmer', {
     authToken: localStorage.getItem('authToken') || null,
     isLoggedIn: false,
     errorLogin: '',
+    datasetImages: [],
+    totalImages: 0,
+    imagePage: 1,
+    imageLimit: 10,
   }),
   actions: {
     setAuthFromGoogle(payload) {
@@ -116,6 +120,26 @@ export const useFarmerStore = defineStore('farmer', {
         console.error('Something went wrong in sending sms', error)
       }
     },
+
+    async fetchDatasetImages(page = 1, limit = 40) {
+      try {
+        const offset = (page - 1) * limit
+
+        const response = await api.get(`/User/dataset-images?limit=${limit}&offset=${offset}`)
+
+        const json = response.data
+
+        this.datasetImages = json.data
+        this.totalImages = json.total
+        this.imagePage = page
+        this.imageLimit = limit
+
+        console.log('Fetched images:', json.data)
+      } catch (error) {
+        console.error('Failed to fetch dataset images:', error)
+      }
+    },
+
     async logout() {
       try {
         // Make API call to logout

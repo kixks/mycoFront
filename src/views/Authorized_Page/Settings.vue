@@ -1,6 +1,7 @@
 <template>
   <PageLayout>
     <div class="body-content">
+      <!-- Floating Alert -->
       <div class="floating-alert">
         <v-alert
           v-if="showAlert"
@@ -21,95 +22,100 @@
           </template>
         </v-alert>
       </div>
-      <v-container fluid class="elevation-3 pa-15 ma-12 w-75">
-        <div class="col">
-          <div class="text-h4 title mb-4">Update Credentials</div>
-          <v-divider class="my-5"></v-divider>
-          <v-form>
-            <v-row>
-              <v-col cols="6" class="mb-4">
-                <span class="field-label">Name</span>
-                <v-text-field
-                  v-model="name"
-                  label="Enter name"
-                  variant="solo-filled"
-                  density="comfortable"
-                  required
-                />
-              </v-col>
 
-              <v-col cols="6" class="mb-4">
-                <span class="field-label">Address</span>
-                <v-text-field
-                  v-model="address"
-                  label="Enter address"
-                  variant="solo-filled"
-                  density="comfortable"
-                  required
-                />
-              </v-col>
+      <!-- Page Content -->
+      <v-container>
+        <!-- Title Row OUTSIDE the container -->
+        <v-row class="px-10 py-4 mt-3">
+          <v-col cols="12" class="text-h4 title">UPDATE CREDENTIALS</v-col>
+        </v-row>
 
-              <v-col cols="6" class="mb-4">
-                <span class="field-label">Phone Number</span>
-                <v-text-field
-                  v-model="phone"
-                  label="Enter number"
-                  variant="solo-filled"
-                  density="comfortable"
-                  required
-                />
-              </v-col>
+        <!-- Form Container -->
+        <div class="form-wrapper">
+          <v-container fluid class="elevation-3 rounded-xl pa-15 container-design">
+            <v-form>
+              <v-row>
+                <v-col cols="6">
+                  <span class="field-label">Name</span>
+                  <v-text-field
+                    v-model="name"
+                    variant="outlined"
+                    density="comfortable"
+                    clearable
+                    required
+                  />
+                </v-col>
 
-              <v-col cols="6" class="mb-4">
-                <span class="field-label">Email Address</span>
-                <v-text-field
-                  v-model="email"
-                  label="Enter email"
-                  variant="solo-filled"
-                  density="comfortable"
-                  required
-                />
-              </v-col>
+                <v-col cols="6">
+                  <span class="field-label">Address</span>
+                  <v-text-field
+                    v-model="address"
+                    variant="outlined"
+                    clearable
+                    density="comfortable"
+                    required
+                  />
+                </v-col>
 
-              <v-divider class="my-5"></v-divider>
+                <v-col cols="6">
+                  <span class="field-label">Phone Number</span>
+                  <v-text-field
+                    v-model="phone"
+                    variant="outlined"
+                    density="comfortable"
+                    clearable
+                    required
+                  />
+                </v-col>
 
-              <v-col cols="6" class="mb-4">
-                <span class="field-label">Reset Password</span>
-                <v-text-field
-                  v-model="password"
-                  label="Enter password"
-                  :type="showPassword ? 'text' : 'password'"
-                  variant="solo-filled"
-                  density="comfortable"
-                  :append-inner-icon="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"
-                  @click:append-inner="showPassword = !showPassword"
-                  :error-messages="passwordError"
-                />
-              </v-col>
+                <v-col cols="6">
+                  <span class="field-label">Email Address</span>
+                  <v-text-field
+                    v-model="email"
+                    variant="outlined"
+                    density="comfortable"
+                    clearable
+                    required
+                  />
+                </v-col>
 
-              <v-col cols="6" class="mb-4">
-                <span class="field-label">Confirm Password</span>
-                <v-text-field
-                  v-model="confirmPassword"
-                  label="Enter password"
-                  :type="showConfirmPassword ? 'text' : 'password'"
-                  variant="solo-filled"
-                  density="comfortable"
-                  :append-inner-icon="showConfirmPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"
-                  @click:append-inner="showConfirmPassword = !showConfirmPassword"
-                  :error-messages="passwordError"
-                />
-              </v-col>
-            </v-row>
+                <v-divider class="my-5"></v-divider>
 
-            <v-row justify="center">
-              <v-col cols="auto">
-                <v-btn width="700px" color="#169976" size="large" @click="updateSettings">
+                <v-col cols="6">
+                  <span class="field-label">Reset Password</span>
+                  <v-text-field
+                    v-model="password"
+                    :type="showPassword ? 'text' : 'password'"
+                    variant="outlined"
+                    density="comfortable"
+                    clearable
+                    :append-inner-icon="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"
+                    @click:append-inner="showPassword = !showPassword"
+                    :error-messages="passwordError"
+                  />
+                </v-col>
+
+                <v-col cols="6">
+                  <span class="field-label">Confirm Password</span>
+                  <v-text-field
+                    v-model="confirmPassword"
+                    :type="showConfirmPassword ? 'text' : 'password'"
+                    variant="outlined"
+                    density="comfortable"
+                    clearable
+                    :append-inner-icon="showConfirmPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"
+                    @click:append-inner="showConfirmPassword = !showConfirmPassword"
+                    :error-messages="passwordError"
+                  />
+                </v-col>
+              </v-row>
+              <div class="py-5 mt-10">
+                <v-btn width="100%" color="#169976" size="large" @click="updateSettings">
                   Update
                 </v-btn>
-              </v-col>
-            </v-row>
-          </v-form>
+              </div>
+            </v-form>
+          </v-container>
         </div>
       </v-container>
     </div>
@@ -241,15 +247,12 @@ const updateSettings = async () => {
 
 <style scoped>
 .body-content {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #dae9e5;
+  font-family: 'Poppins', sans-serif;
+  min-height: 100vh;
 }
 .title {
   font-family: 'Poppins', sans-serif;
-  font-weight: 600;
+  font-weight: 700;
 }
 .floating-alert {
   position: fixed;
@@ -259,9 +262,25 @@ const updateSettings = async () => {
   z-index: 9999;
   width: fit-content;
 }
-
+.field-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 4px;
+  display: inline-block;
+}
 .custom-alert {
   border-radius: 10px;
   box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+}
+.form-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+  padding: 2rem;
+  overflow-y: auto;
+}
+.container-design {
+  width: 85%;
 }
 </style>

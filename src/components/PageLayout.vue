@@ -7,7 +7,7 @@
         class="d-flex flex-column"
         :temporary="isMobile"
         width="300"
-        color="#169976"
+        color="#dae9e5"
       >
         <!-- Top Section -->
         <div class="d-flex flex-column" style="height: 100%">
@@ -44,6 +44,15 @@
               >
               </v-list-item>
               <v-list-item
+                prepend-icon="pi pi-folder-open"
+                title="VET-VALIDATED DATASETS"
+                value="datasets"
+                lines="two"
+                class="sidebar-item"
+                @click="goToDatasets"
+              >
+              </v-list-item>
+              <v-list-item
                 prepend-icon="pi pi-cog"
                 title="SETTINGS"
                 value="settings"
@@ -57,7 +66,7 @@
 
           <!-- Logout Button at Bottom -->
           <div class="mt-auto pa-4 ma-2">
-            <v-btn block prepend-icon="pi pi-sign-out" color="#222222" @click="handleLogout">
+            <v-btn block prepend-icon="pi pi-sign-out" color="#169976" @click="handleLogout">
               LOGOUT
             </v-btn>
           </div>
@@ -106,6 +115,10 @@ const goToSettings = () => {
   router.push('/settings')
   if (isMobile.value) drawer.value = false
 }
+const goToDatasets = () => {
+  router.push('/datasets')
+  if (isMobile.value) drawer.value = false
+}
 
 const handleLogout = async () => {
   await farmerStore.logout()
@@ -124,7 +137,7 @@ const handleLogout = async () => {
   font-family: 'Poppins', sans-serif;
   font-size: 1.7rem; /* Title font size */
   font-weight: 700;
-  color: #222222;
+  color: #169976;
 }
 .sidebar-item:deep(.v-list-item__prepend) {
   color: #000000;
@@ -134,11 +147,11 @@ const handleLogout = async () => {
 .sidebar-item:deep(.v-list-item-title) {
   font-family: 'Poppins', sans-serif;
   font-size: 1rem; /* Item font size */
-  font-weight: 500;
+  font-weight: 550;
   word-break: break-word;
   white-space: normal;
   text-overflow: unset;
-  color: #e7f1ef;
+  color: #222222;
 }
 
 .mobile-title {

@@ -42,6 +42,12 @@ const routes = [
     component: () => import('@/views/Authorized_Page/Settings.vue'),
     meta: { requiresAuth: true },
   },
+  {
+    path: '/datasets',
+    name: 'datasets',
+    component: () => import('@/views/Authorized_Page/Datasets.vue'),
+    meta: { requiresAuth: true },
+  },
 ]
 
 const router = createRouter({
