@@ -28,9 +28,9 @@
         <v-row>
           <v-col cols="12" md="5">
             <v-container class="rounded-xl elevation-3" style="height: 39vh">
-              <h2 class="title text-center">TOTAL NUMBER OF DETECTED CHICKENS</h2>
+              <h2 class="title text-center">TOTAL REPORTED NUMBER OF DETECTED CHICKENS</h2>
               <h1 v-if="userType === 'Farmer'" class="text-center detected-chicken-count">
-                {{ farmerStore.detectedChickenArray.length }}
+                {{ filteredTotalCount }}
               </h1>
 
               <h1 v-else class="text-center detected-chicken-count">
@@ -50,6 +50,18 @@
                 >
                   {{ option.toUpperCase() }}
                 </button>
+
+                <!-- Dropdown for year selection -->
+                <select
+                  v-if="selection === 'year'"
+                  v-model="selectedYear"
+                  @change="filterBySelectedYear"
+                >
+                  <option disabled value="">Select Year</option>
+                  <option v-for="year in availableYears" :key="year" :value="year">
+                    {{ year }}
+                  </option>
+                </select>
               </div>
               <apexchart
                 type="area"
@@ -79,23 +91,45 @@
                 <th class="text-left">TIMESTAMP</th>
                 <th class="text-left">DETECTION ACCURACY</th>
                 <th class="text-left">SNAPSHOTS</th>
+                <th class="text-left">CURRENT STATUS</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody v-if="filteredDetectedArray.length">
               <tr
-                v-for="(item, index) in detectedArray"
+                v-for="(item, index) in filteredDetectedArray"
                 :key="index"
-                @click="
-                  () => {
-                    selectedSnapshot = item.SnapshotUrl
-                    showDialog = true
-                  }
-                "
-                style="cursor: pointer"
+                style="cursor: default"
               >
                 <td>{{ formatDate(item.CreatedAt) }}</td>
                 <td>{{ item.ConfidenceScore }}%</td>
-                <td style="color: #cd5656; font-weight: bold">View</td>
+                <td
+                  style="color: #cd5656; font-weight: bold; cursor: pointer"
+                  @click.stop="
+                    () => {
+                      selectedSnapshot = item.SnapshotUrl
+                      showDialog = true
+                    }
+                  "
+                >
+                  View
+                </td>
+                <td>
+                  <select
+                    v-model="item.Status"
+                    @change="handleStatusChange(item)"
+                    :class="['status-dropdown', statusColorClass(item.Status)]"
+                  >
+                    <option disabled value="">Set Status</option>
+                    <option value="Unresolved">Unresolved</option>
+                    <option value="Healthy">Healthy</option>
+                    <option value="Quarantine">Quarantine</option>
+                  </select>
+                </td>
+              </tr>
+            </tbody>
+            <tbody v-else>
+              <tr>
+                <td colspan="3" class="text-center">No records found for {{ selectedYear }}</td>
               </tr>
             </tbody>
           </v-table>
@@ -181,6 +215,9 @@ const totalCount = ref(0)
 const chartRef = ref(null)
 const selection = ref('one_year')
 
+const selectedYear = ref('')
+const availableYears = ref([])
+
 console.log('im the currentfarmerid', userId)
 
 onMounted(async () => {
@@ -196,6 +233,11 @@ onMounted(async () => {
   setTimeout(() => {
     updateData('weak')
   }, 500)
+})
+
+watch(detectedArray, () => {
+  const years = new Set(detectedArray.value.map((item) => new Date(item.CreatedAt).getFullYear()))
+  availableYears.value = Array.from(years).sort((a, b) => b - a)
 })
 
 watch(detectedArray, () => {
@@ -232,6 +274,52 @@ const buildBarChart = () => {
 
   totalCount.value = data.reduce((sum, val) => sum + val, 0)
 }
+const filterBySelectedYear = () => {
+  if (!selectedYear.value) return
+
+  const fromDate = new Date(selectedYear.value, 0, 1)
+  const toDate = new Date(selectedYear.value, 11, 31)
+
+  const groupedData = groupByDateCountWithZeros(detectedArray.value, fromDate, toDate)
+  series.value[0].data = groupedData
+
+  const chart = chartRef.value?.chart
+  if (chart) chart.zoomX(fromDate.getTime(), toDate.getTime())
+}
+
+const filteredDetectedArray = computed(() => {
+  if (!selectedYear.value || selection.value !== 'year') {
+    return detectedArray.value
+  }
+
+  return detectedArray.value.filter((item) => {
+    const year = new Date(item.CreatedAt).getFullYear()
+    return year === Number(selectedYear.value)
+  })
+})
+const filteredTotalCount = computed(() => {
+  if (userType === 'Farmer') {
+    if (selection.value === 'year' && selectedYear.value) {
+      return filteredDetectedArray.value.length
+    }
+    return detectedArray.value.length
+  } else {
+    return totalCount.value // for Vet, this is already handled
+  }
+})
+
+const handleStatusChange = async (snapshotItem) => {
+  try {
+    await farmerStore.updateSnapshotStatus(snapshotItem.Id, snapshotItem.Status)
+    alertTitle.value = `Status updated to ${snapshotItem.Status}`
+    alertType.value = 'success'
+    showAlert.value = true
+  } catch (error) {
+    alertTitle.value = 'Failed to update status'
+    alertType.value = 'error'
+    showAlert.value = true
+  }
+}
 
 const getDetectedSymptomatic = async (userId) => {
   await farmerStore.fetchSymptomatic(userId)
@@ -247,6 +335,19 @@ const getDetectedSymptomatic = async (userId) => {
   }
   detectedArray.value = farmerStore.detectedChickenArray
   console.log(detectedArray.value)
+}
+
+const statusColorClass = (status) => {
+  switch (status) {
+    case 'Unresolved':
+      return 'status-unresolved'
+    case 'Quarantine':
+      return 'status-quarantine'
+    case 'Healthy':
+      return 'status-healthy'
+    default:
+      return ''
+  }
 }
 
 const handleSendMessage = (recipientName) => {
@@ -478,6 +579,36 @@ const barSeries = ref([
   font-size: 10rem;
   padding-top: 1rem;
   color: #169976;
+}
+.toolbar select {
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid #169976;
+  font-weight: bold;
+  color: #169976;
+  cursor: pointer;
+}
+.status-dropdown {
+  padding: 6px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: white;
+  font-weight: bold;
+  color: #169976;
+}
+.status-unresolved {
+  color: rgb(255, 81, 0);
+  border-color: rgb(255, 81, 0);
+}
+
+.status-quarantine {
+  color: #ffcc00; /* Yellow */
+  border-color: #ffcc00;
+}
+
+.status-healthy {
+  color: #169976;
+  border-color: #169976;
 }
 @media (max-width: 600px) {
   .title {

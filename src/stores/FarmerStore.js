@@ -139,6 +139,21 @@ export const useFarmerStore = defineStore('farmer', {
         console.error('Failed to fetch dataset images:', error)
       }
     },
+    async updateSnapshotStatus(snapshotId, status) {
+      try {
+        const payload = {
+          snapshotId,
+          status,
+        }
+
+        const res = await api.post('/Detection/update-snapshot-status', payload)
+        console.log('Snapshot status updated:', res.data)
+        return res.data
+      } catch (error) {
+        console.error('Failed to update snapshot status', error)
+        throw error
+      }
+    },
 
     async logout() {
       try {
